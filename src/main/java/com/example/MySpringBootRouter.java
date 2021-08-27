@@ -39,6 +39,7 @@ public class MySpringBootRouter extends RouteBuilder {
     	from("timer:poll?period={{timer.period}}").routeId("{{route.id}}")
     		.process(exchange -> {
     			String wmsUri = env.getProperty("wms.uri");
+				System.out.println("URL WMS: " + wmsUri);
     			// String dateRange = WmsParams.getDateRange(60 * 60 * 24 * 90); // Poll interval in seconds (3 months)
     			// String dateRange = WmsParams.getDateRange(30); // Poll interval in seconds (30 seconds)
     			String dateRange = WmsParams.getDateRange(60 * 60); // Poll interval in seconds (1 hour)
