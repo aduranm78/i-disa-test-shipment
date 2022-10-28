@@ -30,6 +30,20 @@ public class MySpringBootRouter extends RouteBuilder {
     	
     	onException(HttpOperationFailedException.class)
     		.handled(true)
+			.removeHeaders("*")
+        	.setHeader("CamelHttpMethod", constant("POST"))
+        	.setHeader(Exchange.HTTP_URI, constant(erpUri))
+        	.process(new Processor() {
+                @Override
+                public void process(Exchange exchange) throws Exception {
+                	String authHeader = OAuthSign.getAuthHeader(erpUri);
+                    exchange.getMessage().setHeader("Authorization", authHeader);
+                }
+        	})
+        	.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+        	.to("log:DEBUG?showBody=true&showHeaders=true")
+        	.to("https://netsuite")
+        	.to("log:DEBUG?showBody=true&showHeaders=true")
     		.process(exchange -> {
     			System.out.println("No hay registros en el periodo de consulta");
     			System.out.println(exchange.getProperties());
