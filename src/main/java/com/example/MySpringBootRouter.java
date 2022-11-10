@@ -33,8 +33,8 @@ public class MySpringBootRouter extends RouteBuilder {
 			.process(exchange -> {
 				System.out.println("No hay registros en el periodo de consulta");
 				System.out.println(exchange.getProperties());
-			})
-			.continued(true); // Para continuar con la ruta
+			});
+			//.continued(true); // Para continuar con la ruta
 
     	
     	from("timer:poll?period={{timer.period}}").routeId("{{route.id}}")
