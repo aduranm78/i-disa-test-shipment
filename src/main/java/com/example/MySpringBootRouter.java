@@ -29,26 +29,12 @@ public class MySpringBootRouter extends RouteBuilder {
     	String erpUri = "https://5298967-sb1.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=583&deploy=1";
     	
     	onException(HttpOperationFailedException.class)
-    		.handled(true)
-			.removeHeaders("*")
-        	.setHeader("CamelHttpMethod", constant("POST"))
-        	.setHeader(Exchange.HTTP_URI, constant(erpUri))
-        	.process(new Processor() {
-                @Override
-                public void process(Exchange exchange) throws Exception {
-                	String authHeader = OAuthSign.getAuthHeader(erpUri);
-                    exchange.getMessage().setHeader("Authorization", authHeader);
-                }
-        	})
-        	.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-        	.to("log:DEBUG?showBody=true&showHeaders=true")
-        	.to("https://netsuite")
-        	.to("log:DEBUG?showBody=true&showHeaders=true")
-    		.process(exchange -> {
-    			System.out.println("No hay registros en el periodo de consulta");
-    			System.out.println(exchange.getProperties());
-    		});
-    		// .continued(true); // Para continuar con la ruta
+			.handled(true)
+			.process(exchange -> {
+				System.out.println("No hay registros en el periodo de consulta");
+				System.out.println(exchange.getProperties());
+			})
+			.continued(true); // Para continuar con la ruta
 
     	
     	from("timer:poll?period={{timer.period}}").routeId("{{route.id}}")
